@@ -1,5 +1,5 @@
 
-path = 'Day1/input.txt'
+path = './input.txt'
 lines = []
 with open(path, 'r') as file:
     for line in file:
@@ -7,9 +7,12 @@ with open(path, 'r') as file:
 
 sum = 0
 
+def removeLetters(x):
+    return ''.join([char for char in line if not char.isalpha()])
+
 for line in lines:
     this_num = ''
-    line = ''.join([char for char in line if not char.isalpha()]) # remove all letters, leaving only numbers
+    line = removeLetters(line)
     this_num += line[0]
     this_num += line[-1]
     sum += int(this_num)
