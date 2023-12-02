@@ -1,5 +1,5 @@
 
-path = './input.txt'
+path = 'Day1/input.txt'
 lines = []
 with open(path, 'r') as file:
     for line in file:
