@@ -1,56 +1,45 @@
-import sys
-
+from sys import argv
 
 
 galaxy = []
-with open(sys.argv[1], 'r') as file:
+with open(argv[1], 'r') as file:
     for line in file:
-        galaxy.append(line.strip())
+        galaxy.append(list(line.strip()))
 
-def expand(gal):
-    to_insert = []
-    for index, line in enumerate(gal):
-        if '#' not in line:
-            to_insert.append(index)
-    for i in to_insert:
-        gal.insert(i+1, '.'*len(gal[0]))
+cols_to_expand = []
+rows_to_expand = []
 
-    cols = {}
-    for line in gal:
-        for index, char in enumerate(line):
-            if char == '.':
-                if index in cols:
-                    cols[index] += 1
-                else:
-                    cols[index] = 1
-    else:
-        rows_to_insert = []
-        for k in cols.keys():
-            if cols[k] == max(cols.values()):
-                rows_to_insert.append(k)
-        gal = [[str(element) + '.' if index in rows_to_insert else element for index, element in enumerate(sublist)] for sublist in gal]
-        for i, g in enumerate(gal):
-            gal[i] = [element for sublist in gal[i] for element in sublist]
-    return gal
+for i, line in enumerate(galaxy):
+    if all(x=='.' for x in line):
+        rows_to_expand.append(i)
 
-galaxy = expand(galaxy)
-star_count = 1
+for i, char in enumerate(galaxy[0]):
+    if all(x[i]=='.' for x in galaxy):
+        cols_to_expand.append(i)
+
 stars = {}
-
+star_count = 0
 for line_index, line in enumerate(galaxy):
     for char_index, char in enumerate(line):
         if char == '#':
-            galaxy[line_index][char_index] = star_count
-            stars[star_count] = (line_index+1, char_index+1)
             star_count += 1
+            stars[star_count] = (line_index, char_index)
+
 total = 0
 
-for i in range(1, star_count):
-    for j in range(i+1, star_count):
-        width = abs(stars[i][0] - stars[j][0])
-        height = abs(stars[i][1] - stars[j][1])
+for i in range(1, star_count+1):
+    for j in range(i+1, star_count+1):
+        i_width, i_height = stars[i][0], stars[i][1]
+        j_width, j_height = stars[j][0], stars[j][1]
+        add_to_width, add_to_height = 0, 0
+        for r in rows_to_expand:
+            if max(i_width,j_width) > r > min(i_width,j_width):
+                add_to_width += 999999
+        for c in cols_to_expand:
+            if max(i_height,j_height) > c > min(i_height,j_height):
+                add_to_height += 999999
+        width = abs(i_width-j_width) + add_to_width
+        height = abs(i_height-j_height) + add_to_height
         total += width + height
 
-for g in galaxy:
-    print(g)
 print(total)
